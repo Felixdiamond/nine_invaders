@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.score {
+    position: fixed;
+    z-index: 10;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    top: 10px;
+    left: 10px;
+    font-family: sans-serif;
+}
