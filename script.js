@@ -30,8 +30,6 @@ class Player {
   }
 
   draw() {
-    // ctx.fillStyle = 'red'
-    // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
     ctx.save();
     ctx.globalAlpha = this.opacity;
     ctx.translate(
@@ -64,23 +62,15 @@ class Player {
 }
 
 class Projectile {
-  constructor({ position, velocity }) {
+  constructor({ position, velocity, radius }) {
     this.position = position;
     this.velocity = velocity;
-
-    this.radius = 3;
+    this.radius = radius;
   }
 
   draw() {
     ctx.beginPath();
-    ctx.arc(
-      this.position.x,
-      this.position.y,
-      this.radius,
-      0,
-      Math.PI * 2,
-      false
-    );
+    ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.closePath();
@@ -127,7 +117,7 @@ class Particle {
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     if (this.faades) {
-    this.opacity -= 0.01;
+      this.opacity -= 0.01;
     }
   }
 }
@@ -142,7 +132,7 @@ class InvaderProjectile {
   }
 
   draw() {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "#BAA0DE";
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
@@ -211,6 +201,32 @@ class Invader {
   }
 }
 
+class PowerUp {
+  constructor({ position, image, type }) {
+    this.position = position;
+    this.image = new Image();
+    this.image.src = image;
+    this.width = 30;
+    this.height = 30;
+    this.type = type;
+  }
+
+  draw() {
+    ctx.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+  }
+
+  update() {
+    this.draw();
+    this.position.y += 3;
+  }
+}
+
 class Grid {
   constructor() {
     this.position = {
@@ -269,11 +285,17 @@ const keys = {
 
 let frames = 0;
 let randomInterval = Math.floor(Math.random() * 500 + 500);
+let spawnInterval = Math.floor(Math.random() * 1000 + 600);
 let game = {
   over: false,
-  active: true
-}
+  active: true,
+};
 let score = 0;
+let bulletSizeEffectDuration = 0;
+let slowmoEffectDuration = 0;
+let bulletSizePowerUpActive = false;
+
+let gamepowerups = [];
 
 for (let i = 0; i < 100; i++) {
   particles.push(
@@ -306,12 +328,15 @@ function createParticles({ object, color, fades }) {
         },
         radius: Math.random() * 3,
         color: color || "#BAA0DE",
-        fades
+        fades,
       })
     );
   }
 }
 
+/**
+ * Animates the game by updating the game state and rendering the game elements.
+ */
 function animate() {
   if (!game.active) return;
   requestAnimationFrame(animate);
@@ -333,6 +358,7 @@ function animate() {
       particle.update();
     }
   });
+
   invaderProjectiles.forEach((projectile, index) => {
     if (projectile.position.y + projectile.height >= canvas.height) {
       setTimeout(() => {
@@ -359,8 +385,17 @@ function animate() {
       createParticles({
         object: player,
         color: "white",
-        fades: true
+        fades: true,
       });
+    }
+  });
+  gamepowerups.forEach((powerup, index) => {
+    if (powerup.position.y + powerup.height >= canvas.height) {
+      setTimeout(() => {
+        gamepowerups.splice(index, 1);
+      }, 0);
+    } else {
+      powerup.update();
     }
   });
   projectiles.forEach((projectile) => {
@@ -401,7 +436,7 @@ function animate() {
               scoreElement.innerText = score;
               createParticles({
                 object: invader,
-                fades: true
+                fades: true,
               });
               grid.invaders.splice(i, 1);
               projectiles.splice(j, 1);
@@ -421,6 +456,40 @@ function animate() {
             }
           }, 0);
         }
+        gamepowerups.forEach((powerup, index) => {
+          if (
+            projectile.position.y - projectile.radius <=
+              powerup.position.y + powerup.height &&
+            projectile.position.x + projectile.radius >= powerup.position.x &&
+            projectile.position.x - projectile.radius <=
+              powerup.position.x + powerup.width &&
+            projectile.position.y + projectile.radius >= powerup.position.y
+          ) {
+            setTimeout(() => {
+              createParticles({
+                object: powerup,
+                fades: true,
+                color: "green",
+              });
+              gamepowerups.splice(index, 1);
+              projectiles.splice(j, 1); // Remove the projectile that hit the power-up
+
+              if (powerup.type === "bulletsize") {
+                console.log("Collected bulletsize power-up");
+                projectiles.forEach((projectile) => {
+                  projectile.radius = 20;
+                });
+                bulletSizeEffectDuration = 600; // 10 seconds
+                bulletSizePowerUpActive = true; // Set the flag to true
+              } else if (powerup.type === "slowmo") {
+                grids.forEach((grid) => {
+                  grid.velocity.x = 1;
+                });
+                slowmoEffectDuration = 300; // 5 seconds
+              }
+            }, 0);
+          }
+        });
       });
     });
   });
@@ -445,6 +514,50 @@ function animate() {
     randomInterval = Math.floor(Math.random() * 500 + 500);
   }
 
+  if (frames % spawnInterval === 0 && frames > 0) {
+    let powerups = [
+      new PowerUp({
+        position: {
+          x: Math.random() * canvas.width,
+          y: 0,
+        },
+        image: "./assets/bulletsize.png",
+        type: "bulletsize",
+      }),
+      new PowerUp({
+        position: {
+          x: Math.random() * canvas.width,
+          y: 0,
+        },
+        image: "./assets/hourglass.png",
+        type: "slowmo",
+      }),
+    ];
+    gamepowerups.push(powerups[Math.floor(Math.random() * powerups.length)]);
+  }
+
+  if (bulletSizeEffectDuration > 0) {
+    bulletSizeEffectDuration--;
+    if (bulletSizeEffectDuration === 0) {
+      console.log("Resetting bullet size");
+      projectiles.forEach((projectile) => {
+        projectile.radius = 3;
+      });
+      bulletSizePowerUpActive = false; // Reset the flag
+    }
+  }
+
+  // Reset "slowmo" effect
+  if (slowmoEffectDuration > 0) {
+    slowmoEffectDuration--;
+    if (slowmoEffectDuration === 0) {
+      grids.forEach((grid) => {
+        grid.velocity.x = 3;
+      });
+    }
+  }
+
+  console.log(gamepowerups, frames);
   frames++;
 }
 
@@ -462,6 +575,7 @@ addEventListener("keydown", ({ key }) => {
       keys.d.pressed = true;
       break;
     case " ":
+      const projectileRadius = bulletSizePowerUpActive ? 20 : 3; // Determine the radius based on the power-up state
       projectiles.push(
         new Projectile({
           position: {
@@ -472,6 +586,7 @@ addEventListener("keydown", ({ key }) => {
             x: 0,
             y: -10,
           },
+          radius: projectileRadius, // Pass the radius as a parameter
         })
       );
       break;
