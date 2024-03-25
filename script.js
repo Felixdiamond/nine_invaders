@@ -1,5 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyCpraJx7F3MlhEiq0mSm0Zy20CBJCxaGqE",
   authDomain: "nine-invaders.firebaseapp.com",
@@ -72,6 +79,8 @@ class Player {
         y: canvas.height - this.height - 30,
       };
     };
+
+    this.lastShotTime = 0;
   }
 
   draw() {
@@ -523,7 +532,7 @@ function animate() {
               if (powerup.type === "bulletsize") {
                 console.log("Collected bulletsize power-up");
                 projectiles.forEach((projectile) => {
-                  projectile.radius = 20;
+                  projectile.radius = 50;
                 });
                 bulletSizeEffectDuration = 600; // 10 seconds
                 bulletSizePowerUpActive = true; // Set the flag to true
@@ -621,20 +630,26 @@ addEventListener("keydown", ({ key }) => {
       keys.d.pressed = true;
       break;
     case " ":
-      const projectileRadius = bulletSizePowerUpActive ? 20 : 3; // Determine the radius based on the power-up state
-      projectiles.push(
-        new Projectile({
-          position: {
-            x: player.position.x + player.width / 2,
-            y: player.position.y,
-          },
-          velocity: {
-            x: 0,
-            y: -10,
-          },
-          radius: projectileRadius, // Pass the radius as a parameter
-        })
-      );
+      const currentTime = performance.now(); // Get the current time in milliseconds
+      const cooldownPeriod = 200; // Set the desired cooldown period in milliseconds (e.g., 200ms = 5 shots per second)
+
+      if (currentTime - player.lastShotTime >= cooldownPeriod) {
+        const projectileRadius = bulletSizePowerUpActive ? 50 : 3;
+        projectiles.push(
+          new Projectile({
+            position: {
+              x: player.position.x + player.width / 2,
+              y: player.position.y,
+            },
+            velocity: {
+              x: 0,
+              y: -10,
+            },
+            radius: projectileRadius,
+          })
+        );
+        player.lastShotTime = currentTime; // Update the last shot time
+      }
       break;
   }
 });
@@ -655,7 +670,6 @@ addEventListener("keyup", ({ key }) => {
   }
 });
 
-
 leaderboardBtn.addEventListener("click", () => {
   let nameInput = document.querySelector(".name-input");
   let name = nameInput.value;
@@ -663,9 +677,8 @@ leaderboardBtn.addEventListener("click", () => {
   modal.style.display = "none";
   nameInput.value = "";
   setTimeout(() => {
-  window.location.href = "leaderboard.html";
-  }
-  , 2000);
+    window.location.href = "leaderboard.html";
+  }, 2000);
 });
 
 closeBtn.addEventListener("click", () => {
