@@ -6,11 +6,112 @@
     <link rel="stylesheet" href="style.css" />
     <title>Space Invaders</title>
   </head>
+  <style>
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0); /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 10px; /* Rounded corners */
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19); /* Shadow for a sleeker look */
+    }
+
+    /* The Close Button */
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* The Input Field */
+    .name-input {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* The Button */
+    .leaderboard-button {
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .restart {
+      background-color: grey;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
   <body>
     <p class="score">
       <span> Score: <span id="score">0</span> </span>
     </p>
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">×</span>
+        <p>Enter your name:</p>
+        <input type="text" class="name-input" placeholder="Your Name (put in same name to update score, highest score will be used)" />
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+          "
+        >
+          <button class="leaderboard-button">Go to Leaderboard</button>
+          <button class="restart" onclick="window.location.reload()">Restart</button>
+        </div>
+      </div>
+    </div>
     <canvas></canvas>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>

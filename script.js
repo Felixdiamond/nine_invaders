@@ -1,6 +1,51 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCpraJx7F3MlhEiq0mSm0Zy20CBJCxaGqE",
+  authDomain: "nine-invaders.firebaseapp.com",
+  projectId: "nine-invaders",
+  storageBucket: "nine-invaders.appspot.com",
+  messagingSenderId: "234584173436",
+  appId: "1:234584173436:web:e4640932abf8235b9692f9",
+};
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+const leaderboardRef = collection(db, "leaderboard");
+
+// Function to write player data to Firestore
+async function writePlayerData(playerName, score) {
+  try {
+    // Query for documents with the given playerName
+    const q = query(leaderboardRef, where("name", "==", playerName));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.size > 0) {
+      // Name already exists
+      alert("Player name already exists. Please choose a different name.");
+      return; // Exit the function without adding data
+    }
+
+    // If name doesn't exist, proceed with adding the new document
+    const newPlayerDoc = await addDoc(leaderboardRef, {
+      name: playerName,
+      score: score,
+    });
+    console.log("Document written with ID:", newPlayerDoc.id);
+
+    // Refresh the leaderboard (adapt based on your existing readData function)
+    readData();
+  } catch (error) {
+    console.error("Error adding document:", error);
+  }
+}
+
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const scoreElement = document.querySelector("#score");
+const modal = document.getElementById("myModal");
+const leaderboardBtn = document.querySelector(".leaderboard-button");
+const closeBtn = document.querySelector(".close");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -380,13 +425,14 @@ function animate() {
       }, 0);
       setTimeout(() => {
         game.active = false;
-      }, 2000);
+      }, 1000);
       console.log("Game Over");
       createParticles({
         object: player,
         color: "white",
         fades: true,
       });
+      modal.style.display = "block";
     }
   });
   gamepowerups.forEach((powerup, index) => {
@@ -607,4 +653,21 @@ addEventListener("keyup", ({ key }) => {
       console.log("pew pew");
       break;
   }
+});
+
+
+leaderboardBtn.addEventListener("click", () => {
+  let nameInput = document.querySelector(".name-input");
+  let name = nameInput.value;
+  writePlayerData(name, score);
+  modal.style.display = "none";
+  nameInput.value = "";
+  setTimeout(() => {
+  window.location.href = "leaderboard.html";
+  }
+  , 2000);
+});
+
+closeBtn.addEventListener("click", () => {
+  modal.style.display = "none";
 });

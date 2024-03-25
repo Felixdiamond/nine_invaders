@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap");
+/* Basic table styles */
+table {
+  border-collapse: collapse;
+  width: 100%; /* Adjust width as needed */
+  margin: 0 auto; /* Center table horizontally */
+  font-family: Arial, sans-serif;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Header styles (optional) */
+th {
+  background-color: #f2f2f2;
+}
+
+/* Rank column styling (optional) */
+.rank {
+  width: 50px; /* Adjust width as needed */
+  text-align: center;
+}
+
+/* Modern game theme (optional) */ /* Overall game theme */
+body {
+  background-image: url("path/to/background-image.jpg"); /* Replace with your game-themed background image */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  font-family: Arial, sans-serif;
+  color: #fff; /* Light text for dark background */
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  width: 60%; /* Adjust width as needed */
+  margin: 0 auto; /* Center table horizontally */
+  font-size: 18px; /* Adjust font size for readability */
+  border: 2px solid #333; /* Solid border with dark color */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}
+
+th,
+td {
+  padding: 15px;
+  text-align: center;
+}
+
+/* Headers */
+th {
+  background-color: #222; /* Darker header background */
+  color: #ddd; /* Light text for header */
+}
+
+/* Rank column */
+.rank {
+  width: 50px; /* Adjust width as needed */
+}
+
+/* Hover effects for visual interest */
+tr:hover {
+  background-color: rgba(0, 0, 0, 0.2); /* Slight darkening on hover */
+  cursor: pointer; /* Display a pointer on hover */
+}
+
+body {
+  background-color: #222;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
+  font-family: "Pixelify Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+table {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+tr {
+  font-family: "Pixelify Sans", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
