@@ -684,3 +684,22 @@ leaderboardBtn.addEventListener("click", () => {
 closeBtn.addEventListener("click", () => {
   modal.style.display = "none";
 });
+
+// Device orientation
+function handleOrientation(event) {
+  const x = event.gamma; // In degree in the range [-90,90]
+  const y = event.beta; // In degree in the range [-180,180]
+
+  if (x > 10) {
+    keys.d.pressed = true;
+    keys.a.pressed = false;
+  } else if (x < -10) {
+    keys.a.pressed = true;
+    keys.d.pressed = false;
+  } else {
+    keys.a.pressed = false;
+    keys.d.pressed = false;
+  }
+}
+
+window.addEventListener("deviceorientation", handleOrientation, true);
