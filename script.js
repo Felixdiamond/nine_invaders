@@ -702,4 +702,28 @@ function handleOrientation(event) {
   }
 }
 
+// Tap on screen to shoot on mobile
+canvas.addEventListener("click", () => {
+  const currentTime = performance.now();
+  const cooldownPeriod = 200;
+
+  if (currentTime - player.lastShotTime >= cooldownPeriod) {
+    const projectileRadius = bulletSizePowerUpActive ? 50 : 3;
+    projectiles.push(
+      new Projectile({
+        position: {
+          x: player.position.x + player.width / 2,
+          y: player.position.y,
+        },
+        velocity: {
+          x: 0,
+          y: -10,
+        },
+        radius: projectileRadius,
+      })
+    );
+    player.lastShotTime = currentTime; // Update the last shot time
+  }
+});
+
 window.addEventListener("deviceorientation", handleOrientation, true);
